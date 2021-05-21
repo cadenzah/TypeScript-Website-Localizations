@@ -1,11 +1,11 @@
 ---
 title: Narrowing
 layout: docs
-permalink: /docs/handbook/2/narrowing.html
-oneline: "Understand how TypeScript uses JavaScript knowledge to reduce the amount of type syntax in your projects."
+permalink: /ko/docs/handbook/2/narrowing.html
+oneline: "TypeScript가 어떻게 JavaScript를 사용하여 타입 구문의 사용을 줄이는지 이해하기"
 ---
 
-Imagine we have a function called `padLeft`.
+`padLeft`라는 함수가 있다고 상상해봅시다.
 
 ```ts twoslash
 function padLeft(padding: number | string, input: string): string {
@@ -13,9 +13,9 @@ function padLeft(padding: number | string, input: string): string {
 }
 ```
 
-If `padding` is a `number`, it will treat that as the number of spaces we want to prepend to `input`.
-If `padding` is a `string`, it should just prepend `padding` to `input`.
-Let's try to implement the logic for when `padLeft` is passed a `number` for `padding`.
+만약 `padding`이 `number`라면, 해당 값은 `input` 앞에 붙일 띄어쓰기의 개수로 취급할 수 있을 것입니다.
+그게 아니라 `padding`이 `string`이라면, 해당 값은 `input` 앞에 덧붙여져야 합니다.
+`padLeft`가 `padding`을 `number`로 받을 때의 로직을 구현해보겠습니다.
 
 ```ts twoslash
 // @errors: 2365
@@ -24,9 +24,9 @@ function padLeft(padding: number | string, input: string) {
 }
 ```
 
-Uh-oh, we're getting an error on `padding + 1`.
-TypeScript is warning us that adding a `number` to a `number | string` might not give us what we want, and it's right.
-In other words, we haven't explicitly checked if `padding` is a `number` first, nor are we handling the case where it's a `string`, so let's do exactly that.
+어라, `padding + 1`에서 오류가 발생하는군요.
+`number` 값을 `number | string`에 더하는 것은 원하는 결과를 주지 않을 수도 있다고 TypeScript가 경고하고 있군요. 그리고 이는 맞는 말입니다.
+다시 말해, `padding`이 `number` 타입인지를 명시적으로 검사하지도 않았고, `padding`이 `string`인 경우도 다루지 않았습니다. 바로 이것을 해결해보도록 하죠.
 
 ```ts twoslash
 function padLeft(padding: number | string, input: string) {
@@ -37,13 +37,14 @@ function padLeft(padding: number | string, input: string) {
 }
 ```
 
-If this mostly looks like uninteresting JavaScript code, that's sort of the point.
-Apart from the annotations we put in place, this TypeScript code looks like JavaScript.
-The idea is that TypeScript's type system aims to make it as easy as possible to write typical JavaScript code without bending over backwards to get type safety.
+위 코드 대부분이 지루한 JavaScript 코드처럼 보인다면, 제대로 보셨습니다.
+타입 표기를 제외하면 위 TypeScript 코드는 그야말로 JavaScript 코드처럼 보입니다.
+TypeScript는 따로 힘들일 필요 없이 전형적인 JavaScript 코드만 작성하더라도 타입 안전성을 쉽게 얻을 수 있도록 하는 것을 목표로 합니다.
 
-While it might not look like much, there's actually a lot going under the covers here.
-Much like how TypeScript analyzes runtime values using static types, it overlays type analysis on JavaScript's runtime control flow constructs like `if/else`, conditional ternaries, loops, truthiness checks, etc., which can all affect those types.
+별일 아닌 것 같이 보일 수도 있겠지만, 실제로는 이면에서 꽤 많은 일들이 벌어지고 있습니다.
+TypeScript가 정적 타입을 사용하여 런타임 값을 분석하는 것과 유사하게, JavaScript의 제어 흐름 요소인 `if/else`, 삼항 조건 연산자, 반복문, 진위 검사 등에 타입 분석이 이루어지며, 이는 각 경우에서 사용되는 타입에 영향을 미칩니다.
 
+TypeScript는 `if` 검사 안의 `typeof padding === "number"`를 _타입 가드_라는 특별한 형식의 코드로 이해합니다.
 Within our `if` check, TypeScript sees `typeof padding === "number"` and understands that as a special form of code called a _type guard_.
 TypeScript follows possible paths of execution that our programs can take to analyze the most specific possible type of a value at a given position.
 It looks at these special checks (called _type guards_) and assignments, and the process of refining types to more specific types than declared is called _narrowing_.
